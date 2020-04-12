@@ -1,30 +1,44 @@
 import React, { SFC, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./styles.scss";
 
 interface IChatProps {
-  chatDetails?: IChatDetails;
+  users?: IChatUsers[];
 }
 
-interface IChatDetails {
+interface IChatUsers {
   id: number;
   name: string;
 }
 
-const Chat: SFC<IChatProps> = (props) => {
-  const [chatDetails, setChatDetails] = useState<IChatDetails>({
-    id: 0,
-    name: "",
-  });
+interface IChatDetails {}
 
-  useEffect(() => {
-    props.chatDetails && setChatDetails(props.chatDetails);
-  }, [props.chatDetails]);
+const Chat: SFC<IChatProps> = (props) => {
+  const [chatUsers, setChatUsers] = useState<IChatUsers[]>([
+    {
+      id: 0,
+      name: "",
+    },
+  ]);
+
+  // useEffect(() => {
+  //   props.chatUsers && setChatUsers(props.chatUsers);
+  // }, [props.chatUsers]);
 
   return (
-    <>
-      <p>hello!!</p>
-      {chatDetails}
-    </>
+    <div className="container">
+      <h2 className="title">Chat</h2>
+      <div className="leftboard">
+        <ul>
+          {chatUsers &&
+            chatUsers.map((user, id) => (
+              <li key={id}>
+                {<Link to={`/chat/${user.name}`}>{user.name}</Link>}
+              </li>
+            ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 

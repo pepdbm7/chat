@@ -1,12 +1,14 @@
 import React, { SFC, useState, SyntheticEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
+import { VERIFY_USER } from "../../actions";
 import "./styles.scss";
 
-interface LandingProps {}
+interface LandingProps {
+  socket?: SocketIOClient.Socket | null;
+}
 
 interface ILoginData {
   username: string;
-  room: string;
 }
 
 const Landing: SFC<LandingProps> = (props) => {
@@ -14,7 +16,6 @@ const Landing: SFC<LandingProps> = (props) => {
   console.log(props);
   const [loginData, setLoginData] = useState<ILoginData>({
     username: localStorage.getItem("username") || "",
-    room: localStorage.getItem("room") || "",
   });
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -27,7 +28,6 @@ const Landing: SFC<LandingProps> = (props) => {
     if (typeof Storage !== "undefined") {
       if (rememberMe) {
         localStorage.setItem("username", loginData.username);
-        localStorage.setItem("room", loginData.room);
       } else {
         localStorage.clear();
       }
@@ -39,19 +39,18 @@ const Landing: SFC<LandingProps> = (props) => {
     setErrorMessage(message);
   };
 
-  const onSubmit = (e: SyntheticEvent): void => {
+  const onSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log({ loginData }, { rememberMe });
+
+    const { socket } = props;
+    socket?.emit(VERIFY_USER, loginData.username);
+
     // validation:
-    if (!loginData.username.trim() && !loginData.room.trim()) {
-      setError("Username and room are missing");
-    } else if (!loginData.username.trim()) {
+    if (!loginData.username.trim()) {
       setError("A username is missing");
-    } else if (!loginData.room.trim()) {
-      setError("A room is missing");
     } else {
       remember();
-      setLoginData({ username: "", room: "" });
+      setLoginData({ username: "" });
       history.push("/chatslist");
     }
   };
@@ -69,17 +68,10 @@ const Landing: SFC<LandingProps> = (props) => {
           placeholder="Write your username"
           onChange={onChange}
         />
-        <input
-          type="text"
-          name="room"
-          value={loginData.room}
-          placeholder="Chatroom name"
-          onChange={onChange}
-        />
         <div className="checkbox">
           <label htmlFor="rememberme">Remember Me </label>
           <input
-            name="rememberme"
+            id="rememberme"
             type="checkbox"
             value={rememberMe.toString()}
             onChange={(e) => setRememberMe(e.target.checked)}
