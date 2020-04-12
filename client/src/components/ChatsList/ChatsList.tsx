@@ -1,5 +1,6 @@
 import React, { SFC, useState, useEffect } from "react";
 // import { Link } from "react-router-dom";
+import "./styles.scss";
 
 interface IChatsListProps {
   chats?: IChatListItem[];
@@ -18,15 +19,15 @@ const ChatsList: SFC<IChatsListProps> = (props) => {
   }, [props]);
 
   return (
-    <>
-      <h2>Chats List</h2>
+    <div className="container">
+      <h2 className="title">Chats List</h2>
       <ul>
         {chats &&
           chats.map((chat, id) => (
             <li key={id}>{/* <Link to={`/${id}`}>{chat.name}</Link> */}</li>
           ))}
       </ul>
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { SFC, useState, useEffect } from "react";
+import "./styles.scss";
 
 interface IChatProps {
   chatDetails?: IChatDetails;

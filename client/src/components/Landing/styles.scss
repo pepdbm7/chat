@@ -1,0 +1,47 @@
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  input,
+  .checkbox {
+    margin: 8px 0;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+
+  .checkbox {
+    padding: 0;
+    [type="checkbox"] {
+      display: inline-flex;
+      margin: 3px 0 0 6px;
+    }
+  }
+
+  button {
+    background: rgba(135, 206, 250, 0.74);
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 20px 0 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: lightskyblue;
+    }
+  }
+}
+
+.errorMessage {
+  color: tomato;
+  height: 14px;
+  font-size: 14px;
+}

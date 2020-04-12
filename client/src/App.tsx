@@ -1,26 +1,28 @@
 import React, { SFC } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Landing from "./components/Landing";
-import ChatsList from "./components/ChatsList";
-import "./App.css";
+import Landing from "./components/Landing/Landing";
+import ChatsList from "./components/ChatsList/ChatsList";
+import "./App.scss";
 
 interface IAppProps {}
 
 const App: SFC<IAppProps> = () => {
   //all logic here
-  const onSubmit = () => {};
   return (
     <BrowserRouter>
       <Switch>
         <Route
           exact
           path="/"
-          render={(props) => <Landing {...props} onSubmit={onSubmit} />}
+          render={(props: any) => {
+            console.log(props);
+            return <Landing {...props} />;
+          }}
         />
         <Route
           exact
           path="/chatslist"
-          render={(props) => <ChatsList {...props} chats={[]} />}
+          render={(props: any) => <ChatsList {...props} chats={[]} />}
         />
       </Switch>
     </BrowserRouter>
