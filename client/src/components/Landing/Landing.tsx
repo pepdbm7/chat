@@ -1,6 +1,6 @@
 import React, { SFC, useState, SyntheticEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
-import { VERIFY_USER } from "../../actions";
+import { VERIFY_USER } from "../../socketEvents";
 import "./styles.scss";
 
 interface LandingProps {
@@ -51,7 +51,7 @@ const Landing: SFC<LandingProps> = (props) => {
     } else {
       remember();
       setLoginData({ username: "" });
-      history.push("/chatslist");
+      history.push("/chat");
     }
   };
 

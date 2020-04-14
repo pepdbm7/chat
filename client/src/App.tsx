@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import io from "socket.io-client";
 
 //actions:
-import { USER_CONNECTED, LOGOUT } from "./actions";
+import { USER_CONNECTED, LOGOUT } from "./socketEvents";
 
 //components:
 import Landing from "./components/Landing/Landing";

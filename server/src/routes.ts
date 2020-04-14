@@ -1,15 +1,14 @@
 import { Router, Request, Response } from "express";
-// node core:
-import path from "path";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/", (req: Request, res: Response) => {
-  res.send("Server working!");
+  res.send("Server working!").status(200);
 });
 
-router.get("*", (req: Request, res: Response) => {
-  res.status(404).send("Not Found");
-});
+// Catch any unresolved url requests and redirects to correct page (404 view):
+router.get("*", (req: Request, res: Response) =>
+  res.status(404).redirect("/404")
+);
 
 export default router;
