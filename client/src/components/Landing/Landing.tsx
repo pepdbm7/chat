@@ -1,6 +1,6 @@
 import React, { SFC, useState, SyntheticEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
-import { JOINCHAT } from "../../socketEvents";
+import { JOIN_CHAT } from "../../socketEvents";
 import "./styles.scss";
 
 interface LandingProps {
@@ -45,7 +45,8 @@ const Landing: SFC<LandingProps> = (props) => {
     e.preventDefault();
 
     const { socket } = props;
-    socket?.emit(JOINCHAT, loginData, (error: string) => {
+
+    socket?.emit(JOIN_CHAT, loginData, (error: string) => {
       if (error) {
         setError(error);
         console.log({ error });

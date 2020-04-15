@@ -4,7 +4,7 @@ interface IUser {
   room?: string;
 }
 
-interface IReturned {
+interface IAnswer {
   user?: IUser;
   users?: IUser[];
   error?: string;
@@ -12,13 +12,13 @@ interface IReturned {
 
 const users: IUser[] = [];
 
-const addUser = ({ id = "", username = "", room = "" }: IUser): IReturned => {
+const addUser = ({ id, username, room }: IUser): IAnswer => {
   const user = { id, username, room };
 
-  console.log("from addUser:", { id, username, room });
+  console.log("NEW User:", { id, username, room });
 
-  username = username.trim().toLowerCase();
-  room = room.trim().toLowerCase();
+  username = username?.trim().toLowerCase();
+  room = room?.trim().toLowerCase();
 
   const existingUserInRoom = users.find(
     (user) => user.room === room && user.username === username
@@ -34,16 +34,16 @@ const addUser = ({ id = "", username = "", room = "" }: IUser): IReturned => {
   return { user, error: "" };
 };
 
-const removeUser = (id: string): IReturned => {
-  const index = users.findIndex((user) => user.id === id);
+const removeUser = (id: string): IAnswer | undefined => {
+  const index: number = users.findIndex((user) => user.id === id);
+  const removedUser: IUser = users.splice(index, 1)[0];
 
-  if (index !== -1) users.splice(index, 1)[0];
-  else return { error: "Couldn't remove user: not found!" };
+  console.log("desde RemoveUser:", { index }, { removedUser });
 
-  return { users };
+  if (index !== -1) return { user: removedUser };
 };
 
-const getUser = (id: string): IReturned => {
+const getUser = (id: string): IAnswer => {
   const foundUser: IUser | undefined = users.find((user) => user.id === id);
 
   if (!foundUser) return { error: "User not found!" };
@@ -51,7 +51,12 @@ const getUser = (id: string): IReturned => {
   return { user: foundUser };
 };
 
-const getUsersInRoom = (room: string): IUser[] =>
-  users.filter((user) => user.room === room);
+const getUsersInRoom = (room: string): IAnswer => {
+  const usersInRoom: IUser[] = users.filter((user) => user.room === room);
+  console.log("from getusersinroom:", { room }, { usersInRoom });
+  return usersInRoom
+    ? { users: usersInRoom }
+    : { error: "No users in this room!" };
+};
 
 export { addUser, removeUser, getUser, getUsersInRoom };
