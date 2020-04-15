@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 
 const {
-  VERIFY_USER,
+  JOIN_CHAT,
   USER_CONNECTED,
   USER_DISCONNECTED,
   LOGOUT,
@@ -13,12 +13,17 @@ const {
 
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
+interface IUser {
+  username?: string;
+  room?: string;
+}
+
 export default (io: Server) => {
   io.on("connect", (socket: Socket) => {
     console.log("Socket.io server just connected!!!");
-    socket.on("join", ({ username, room }, callback: Function) => {
+    socket.on(JOIN_CHAT, ({ username, room }: IUser, callback: Function) => {
       const { error, user } = addUser({ id: socket.id, username, room });
-
+      console.log("joining chat", username, room);
       if (error) return callback(error);
 
       socket.join(user.room);

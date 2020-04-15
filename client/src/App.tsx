@@ -8,10 +8,11 @@ import { USER_CONNECTED, LOGOUT } from "./socketEvents";
 //components:
 import Landing from "./components/Landing/Landing";
 import Chat from "./components/Chat/Chat";
+import Notfound from "./components/Notfound/Notfound";
 //styles:
 import "./App.scss";
 
-const socketUrl = "http://localhost:3000";
+const socketUrl = "http://localhost:5000";
 
 interface IAppProps {}
 
@@ -26,7 +27,7 @@ const App: SFC<IAppProps> = () => {
     socket?.on("connect", () => {
       console.log("connected! front-end");
     });
-    // setSocket(socket);
+    setSocket(socket);
   }, []);
 
   const setUserFunction = (user: IUser) => {
@@ -55,6 +56,7 @@ const App: SFC<IAppProps> = () => {
             <Chat {...props} socket={socket} user={user} logout={logout} />
           )}
         />
+        <Route path="/" component={Notfound} />
       </Switch>
     </BrowserRouter>
   );
