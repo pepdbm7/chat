@@ -1,8 +1,105 @@
-.container {
+.page {
   width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .title {
   background: lightskyblue;
   padding: 20px;
+  text-align: center;
+}
+
+.containerChat {
+  display: flex;
+  padding: 0 40px;
+
+  .leftboard {
+    width: 20vw;
+    min-width: 100px;
+    margin-right: 20px;
+    ul {
+      padding: 10px;
+      min-height: 100%;
+      a {
+        text-decoration: none;
+        color: white;
+        &:hover {
+          color: lightgreen;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  .right {
+    width: 80vw;
+    min-width: 200px;
+
+    ul {
+      overflow-y: scroll;
+      background-color: whitesmoke;
+      border-radius: 5px;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    padding: 20px 40px;
+    border: 1px solid white;
+    max-height: 75%;
+
+    li {
+      padding: 5px 10px;
+      width: fit-content;
+      border-radius: 5px;
+      list-style: none;
+      margin: 5px 0;
+
+      &.adminMessages {
+        color: black;
+        background: lightgray;
+        align-self: center;
+      }
+
+      &.myMessages {
+        background: royalblue;
+        margin-left: auto;
+      }
+
+      &.othersMessages {
+        background: lightskyblue;
+        margin-right: auto;
+      }
+
+      p {
+        margin: 0;
+        font-size: small;
+        &.userMessage {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+    input {
+      width: 80%;
+      height: fit-content;
+      padding: 8px 15px;
+      margin: 0;
+      border: none;
+    }
+    button {
+      width: 20%;
+      height: fit-content;
+      padding: 8px 15px;
+      margin: 0;
+      border-radius: 0;
+    }
+  }
 }

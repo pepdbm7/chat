@@ -1,12 +1,12 @@
-import React, { SFC, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { MESSAGE_SENT } from "../../socketEvents";
+import React, { SFC, useState, useEffect, SyntheticEvent } from "react";
+import { Link, useHistory } from "react-router-dom";
+// import { LOGOUT } from "../../socketEvents";
 
 import "./styles.scss";
 
 interface IChatProps {
   socket?: SocketIOClient.Socket;
-  user?: IChatUser[];
+  user?: IChatUser;
 }
 
 interface IRoomData {
@@ -27,18 +27,12 @@ interface IMessage {
   emitter: string;
 }
 
-interface IChatDetails {}
-
 const Chat: SFC<IChatProps> = ({ socket, user }) => {
-  const [chatUsers, setChatUsers] = useState<IChatUser[]>([
-    // {
-    //   id: "",
-    //   username: "",
-    //   room: "",
-    // },
-  ]);
+  const [chatUsers, setChatUsers] = useState<IChatUser[]>([]);
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [messageToSend, setMessageToSend] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const history = useHistory();
 
   useEffect(() => {
     socket?.on("message", (message: IMessage): void => {
@@ -51,44 +45,105 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
     });
   }, []);
 
+  useEffect(() => console.log({ messages }), [messages]);
+
+  useEffect(() => console.log({ chatUsers }), [chatUsers]);
+
   const setError = (message: string): void => {
     setTimeout(() => setErrorMessage(""), 2000);
     setErrorMessage(message);
   };
 
+  const handleSendMessage = (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    if (messageToSend)
+      socket?.emit("sendMessage", messageToSend, (error: string) => {
+        if (error) return setError(error);
+      });
+    setMessageToSend("");
+  };
+
+  const handleLogout = () => {
+    //clear connection:
+    socket?.emit("disconnect");
+    //clear data from local state:
+    setChatUsers([]);
+    setMessages([]);
+    setErrorMessage("");
+    //go to landing:
+    history.push("/");
+  };
+
   return (
-    <div className="container">
-      <h2 className="title">Chat</h2>
-      <div className="leftboard">
-        <ul>
-          {chatUsers
-            ? chatUsers.map((user: IChatUser) => (
-                <li key={user.id}>
-                  {
-                    <Link
-                      to={""}
-                      // to={`/chat/${user.name}`}
-                    >
-                      {user.username}
-                    </Link>
-                  }
-                </li>
-              ))
-            : null}
-        </ul>
-
-        {messages ? (
+    <div className="page">
+      <h2 className="title">Chat {user?.room}</h2>
+      <div className="containerChat">
+        <div className="leftboard">
+          <h3>Users:</h3>
           <ul>
-            Messages{" "}
-            {messages.map((message: IMessage) => (
-              <li key={message.id}>{message.text}</li>
-            ))}
+            {chatUsers
+              ? chatUsers.map((user: IChatUser) => (
+                  <li key={user.id}>
+                    {
+                      <Link
+                        to={""}
+                        // to={`/chat/${user.name}`}
+                      >
+                        {user.username}
+                      </Link>
+                    }
+                  </li>
+                ))
+              : null}
           </ul>
-        ) : null}
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+        <div className="right">
+          {messages ? (
+            <>
+              <h3>MESSAGES:</h3>
+              <ul>
+                {messages.map((message: IMessage) => {
+                  console.log(message.emitter, user?.username);
+                  if (message.emitter === "admin")
+                    return (
+                      <li className="adminMessages" key={message.id}>
+                        <p>{message.text}</p>
+                      </li>
+                    );
+                  else if (message.emitter === user?.username)
+                    return (
+                      <li className="myMessages" key={message.id}>
+                        <p className="userMessage">{message.emitter}</p>
+                        <p>{message.text}</p>
+                      </li>
+                    );
+                  else
+                    return (
+                      <li className="othersMessages" key={message.id}>
+                        <p className="userMessage">{message.emitter}</p>
+                        <p>{message.text}</p>
+                      </li>
+                    );
+                })}
+              </ul>
+            </>
+          ) : null}
 
-        <p className="errorMessage">{errorMessage}</p>
+          <form onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              name="room"
+              value={messageToSend}
+              placeholder="Write something..."
+              onChange={(e) => setMessageToSend(e.target.value)}
+            />
+            <button type="submit">Send</button>
+          </form>
 
-        <Link to={"/"}>Logout</Link>
+          <p className="errorMessage">{errorMessage}</p>
+        </div>
       </div>
     </div>
   );

@@ -11,71 +11,80 @@ const {
   TYPING,
 } = require("../../client/src/socketEvents");
 
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+  getTime,
+} = require("./users");
 
 interface IUser {
   username?: string;
   room?: string;
 }
 
+interface IMessage {
+  id: string;
+  time: string;
+  text: string;
+  emitter: string;
+}
+
 export default (io: Server) => {
   io.on("connect", (socket: Socket) => {
-    console.log(`Server: Socket with ID: ${socket.id} just connected!!!`);
+    console.log(`User with ID: ${socket.id} just connected!!!`);
 
     socket.on(JOIN_CHAT, ({ username, room }: IUser, callback: Function) => {
       const { error, user } = addUser({ id: socket.id, username, room });
-      console.log("joining chat", error, user);
       if (error) return callback(error);
 
       socket.join(user.room);
+      console.log(username + " joined chat", room);
 
       socket.emit("message", {
-        user: "admin",
+        id: "asdf",
+        emitter: "admin",
         text: `${user.username}, welcome to room ${user.room}.`,
+        time: getTime(),
       });
-      //   socket.broadcast.to(user.room).emit("message", {
-      //     user: "admin",
-      //     text: `${user.username} has joined!`,
-      //   });
 
-      io.to(user.room).emit("roomData", () => {
-        const { users, error } = getUsersInRoom(user.room);
-
-        return {
-          // room: user.room,
-          users,
-          error,
-        };
+      socket.to(user.room).emit("message", {
+        id: "fdsasf",
+        emitter: "admin",
+        text: `${user.username} has joined!`,
+        time: getTime(),
       });
-      callback();
+
+      if (user) io.to(user.room).emit("roomData", getUsersInRoom(user.room));
     });
 
-    socket.on("message", (message, callback) => {
+    socket.on("sendMessage", (message, callback) => {
       const { user, error } = getUser(socket.id);
       if (error) return callback(error);
 
-      io.to(user.room).emit("message", { user: user.username, text: message });
-      callback();
+      io.to(user.room).emit("message", {
+        id: "1234",
+        emitter: user.username,
+        text: message,
+        time: getTime(),
+      });
     });
 
     socket.on("disconnect", () => {
-      const user = removeUser(socket.id);
+      const { user } = removeUser(socket.id);
+      const usersInChat = user && getUsersInRoom(user.room);
 
-      if (user) {
-        console.log(`${user.username} has left from ${user.room}.`);
+      //if no users in chat, don't send update:
+      if (user && usersInChat) {
         io.to(user.room).emit("message", {
-          user: "Admin",
-          text: `${user.username} has left from ${user.room}.`,
+          id: "sdf22a",
+          emmiter: "admin",
+          text: `${user.username} has left from room ${user.room}.`,
+          time: getTime(),
         });
-        io.to(user.room).emit("roomData", () => {
-          const { users, error } = getUsersInRoom(user.room);
 
-          return {
-            // room: user.room,
-            users,
-            error,
-          };
-        });
+        io.to(user.room).emit("roomData", usersInChat);
       }
     });
   });

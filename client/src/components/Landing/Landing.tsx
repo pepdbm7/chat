@@ -5,6 +5,7 @@ import "./styles.scss";
 
 interface LandingProps {
   socket?: SocketIOClient.Socket | null;
+  setUser: Function;
 }
 
 interface ILoginData {
@@ -46,18 +47,17 @@ const Landing: SFC<LandingProps> = (props) => {
 
     const { socket } = props;
 
-    socket?.emit(JOIN_CHAT, loginData, (error: string) => {
-      if (error) {
-        setError(error);
-        console.log({ error });
-        return;
-      } else {
-        console.log("all good! joined");
-        remember();
-        setLoginData({ username: "", room: "" });
-        history.push("/chat");
-      }
+    const join = socket?.emit(JOIN_CHAT, loginData, (error: string) => {
+      if (error) return setError(error);
     });
+
+    if (join && !errorMessage) {
+      console.log("all good! joined");
+      remember();
+      props.setUser({ username: loginData.username, room: loginData.room });
+      setLoginData({ username: "", room: "" });
+      history.push("/chat");
+    }
   };
 
   return (

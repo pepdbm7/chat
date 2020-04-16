@@ -1,9 +1,9 @@
 import React, { SFC, useState, useEffect } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import io from "socket.io-client";
 
 //actions:
-import { USER_CONNECTED, LOGOUT } from "./socketEvents";
+import { USER_CONNECTED } from "./socketEvents";
 
 //components:
 import Landing from "./components/Landing/Landing";
@@ -16,7 +16,10 @@ const socketUrl = "http://localhost:5000";
 
 interface IAppProps {}
 
-interface IUser {}
+interface IUser {
+  username: string;
+  room: string;
+}
 
 const App: SFC<IAppProps> = () => {
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
@@ -28,16 +31,17 @@ const App: SFC<IAppProps> = () => {
       console.log("connected! front-end");
     });
     setSocket(socket);
+
+    return () => {
+      setSocket(null);
+      // setUser(null);
+    };
   }, []);
 
-  const setUserFunction = (user: IUser) => {
+  const connectUserToSocket = (user: IUser) => {
     socket?.emit(USER_CONNECTED, user);
     setUser(user);
-  };
-
-  const logout = () => {
-    socket?.emit(LOGOUT);
-    setUser(null);
+    console.log({ user });
   };
 
   return (
@@ -47,14 +51,18 @@ const App: SFC<IAppProps> = () => {
           exact
           path="/"
           render={(props: any) => (
-            <Landing {...props} socket={socket} setUser={setUserFunction} />
+            <Landing {...props} socket={socket} setUser={connectUserToSocket} />
           )}
         />
         <Route
           path="/chat"
-          render={(props: any) => (
-            <Chat {...props} socket={socket} user={user} logout={logout} />
-          )}
+          render={(props: any) =>
+            socket ? (
+              <Chat {...props} socket={socket} user={user} />
+            ) : (
+              <Redirect exact to={"/"} />
+            )
+          }
         />
         <Route path="/" component={Notfound} />
       </Switch>
