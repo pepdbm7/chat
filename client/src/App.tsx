@@ -2,9 +2,6 @@ import React, { SFC, useState, useEffect } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import io from "socket.io-client";
 
-//actions:
-import { USER_CONNECTED } from "./socketEvents";
-
 //components:
 import Landing from "./components/Landing/Landing";
 import Chat from "./components/Chat/Chat";
@@ -25,25 +22,23 @@ const App: SFC<IAppProps> = () => {
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [user, setUser] = useState<IUser | null>(null);
 
-  useEffect(() => {
+  const createNewSocket = () => {
     let socket = io(socketUrl);
     socket?.on("connect", () => {
       console.log("connected! front-end");
     });
     setSocket(socket);
+  };
 
-    return () => {
-      setSocket(null);
-      // setUser(null);
-    };
-  }, []);
+  useEffect(() => console.log({ socket }, { user }), [socket, user]);
 
   const connectUserToSocket = (user: IUser) => {
-    socket?.emit(USER_CONNECTED, user);
+    socket?.emit("connect", user);
     setUser(user);
     console.log({ user });
   };
 
+  //to adapt height on mac device's browser:
   window.addEventListener("resize", () => {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -56,14 +51,25 @@ const App: SFC<IAppProps> = () => {
           exact
           path="/"
           render={(props: any) => (
-            <Landing {...props} socket={socket} setUser={connectUserToSocket} />
+            <Landing
+              {...props}
+              socket={socket}
+              createNewSocket={createNewSocket}
+              setUser={connectUserToSocket}
+            />
           )}
         />
         <Route
           path="/chat"
           render={(props: any) =>
             socket ? (
-              <Chat {...props} socket={socket} user={user} />
+              <Chat
+                {...props}
+                socket={socket}
+                user={user}
+                setSocket={setSocket}
+                setUser={setUser}
+              />
             ) : (
               <Redirect exact to={"/"} />
             )

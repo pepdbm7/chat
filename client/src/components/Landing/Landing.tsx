@@ -1,11 +1,18 @@
-import React, { SFC, useState, SyntheticEvent, ChangeEvent } from "react";
+import React, {
+  SFC,
+  useState,
+  useEffect,
+  SyntheticEvent,
+  ChangeEvent,
+} from "react";
 import { useHistory } from "react-router-dom";
-import { JOIN_CHAT } from "../../socketEvents";
+import { JOIN_CHAT, VERIFY_USER } from "../../socketEvents";
 import "./styles.scss";
 
 interface LandingProps {
   socket?: SocketIOClient.Socket | null;
   setUser: Function;
+  createNewSocket: Function;
 }
 
 interface ILoginData {
@@ -15,6 +22,8 @@ interface ILoginData {
 
 const Landing: SFC<LandingProps> = (props) => {
   let history = useHistory();
+  const { socket, setUser, createNewSocket } = props;
+
   const [loginData, setLoginData] = useState<ILoginData>({
     username: localStorage.getItem("username") || "",
     room: localStorage.getItem("room") || "",
@@ -25,6 +34,10 @@ const Landing: SFC<LandingProps> = (props) => {
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    if (!socket) createNewSocket();
+  }, []);
 
   const remember = (): void => {
     if (typeof Storage !== "undefined") {
@@ -42,25 +55,33 @@ const Landing: SFC<LandingProps> = (props) => {
     setErrorMessage(message);
   };
 
-  const onSubmit = (e: SyntheticEvent) => {
+  const onSubmit = (e: SyntheticEvent): Promise<void> => {
     e.preventDefault();
 
-    const { socket } = props;
-
-    const join = socket?.emit(JOIN_CHAT, loginData, (error: string) => {
-      if (error) return setError(error);
-      debugger;
-    });
-
-    console.log(join);
-
-    // if (join && !errorMessage) {
-    //   console.log("all good! joined");
-    //   remember();
-    //   props.setUser({ username: loginData.username, room: loginData.room });
-    //   setLoginData({ username: "", room: "" });
-    //   history.push("/chat");
-    // }
+    //make socket event asyncronously to validate fields in server-side:
+    return new Promise((resolve, reject) => {
+      if (!socket) {
+        reject("no socket connection yet");
+      } else {
+        socket?.emit(VERIFY_USER, loginData, (response: any) => {
+          if (response.error) {
+            reject(response.error);
+          } else {
+            resolve();
+          }
+        });
+      }
+    })
+      .then((_) => {
+        remember();
+        setUser({
+          username: loginData.username,
+          room: loginData.room,
+        });
+        socket?.emit(JOIN_CHAT, loginData);
+      })
+      .then((_) => history.push("/chat"))
+      .catch((err) => setError(err));
   };
 
   return (
@@ -95,10 +116,9 @@ const Landing: SFC<LandingProps> = (props) => {
           />
           <span className="checkmark"></span>
         </label>
-
+        <p className="errorMessage">{errorMessage}</p>
         <input className="input" type="submit" value="Log In" />
       </form>
-      <p className="errorMessage">{errorMessage}</p>
     </div>
   );
 };

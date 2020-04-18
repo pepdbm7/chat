@@ -1,12 +1,15 @@
 import React, { SFC, useState, useEffect, SyntheticEvent } from "react";
 import { Link, useHistory } from "react-router-dom";
-// import { LOGOUT } from "../../socketEvents";
+import MessagesList from "./MessagesList/MessagesList";
+import { SEND_MESSAGE, LOGOUT } from "../../socketEvents";
 
 import "./styles.scss";
 
 interface IChatProps {
   socket?: SocketIOClient.Socket;
   user?: IChatUser;
+  setUser: Function;
+  setSocket: Function;
 }
 
 interface IRoomData {
@@ -14,20 +17,20 @@ interface IRoomData {
   error?: string;
 }
 
-interface IChatUser {
+export interface IChatUser {
   id: string;
   username?: string;
   room?: string;
 }
 
-interface IMessage {
+export interface IMessage {
   id: string;
   time: string;
   text: string;
   emitter: string;
 }
 
-const Chat: SFC<IChatProps> = ({ socket, user }) => {
+const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
   const [chatUsers, setChatUsers] = useState<IChatUser[]>([]);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [messageToSend, setMessageToSend] = useState<string>("");
@@ -45,9 +48,7 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
     });
   }, []);
 
-  useEffect(() => console.log({ messages }), [messages]);
-
-  useEffect(() => console.log({ chatUsers }), [chatUsers]);
+  // useEffect(() => console.log({ chatUsers }), [chatUsers]);
 
   const setError = (message: string): void => {
     setTimeout(() => setErrorMessage(""), 2000);
@@ -58,7 +59,7 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
     e.preventDefault();
 
     if (messageToSend)
-      socket?.emit("sendMessage", messageToSend, (error: string) => {
+      socket?.emit(SEND_MESSAGE, messageToSend, (error: string) => {
         if (error) return setError(error);
       });
     setMessageToSend("");
@@ -66,7 +67,9 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
 
   const handleLogout = () => {
     //clear connection:
-    socket?.emit("disconnect");
+    socket?.emit(LOGOUT);
+    setSocket(null);
+    setUser(null);
     //clear data from local state:
     setChatUsers([]);
     setMessages([]);
@@ -91,12 +94,14 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
               ? chatUsers.map((user: IChatUser) => (
                   <li key={user.id}>
                     {
-                      <Link
-                        to={""}
-                        // to={`/chat/${user.name}`}
-                      >
-                        {user.username}
-                      </Link>
+                      //<Link
+                      //   to={""}
+                      // to={`/chat/${user.name}`}
+                      // >
+                      // {
+                      user.username
+                      // }
+                      // </Link>
                     }
                   </li>
                 ))
@@ -106,36 +111,7 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
         <div className="messagesBoard">
           <form onSubmit={handleSendMessage}>
             <h3>Messages:</h3>
-            <ul>
-              {messages ? (
-                <>
-                  {messages.map((message: IMessage) => {
-                    console.log(message.emitter, user?.username);
-                    if (message.emitter === "admin")
-                      return (
-                        <li className="adminMessages" key={message.id}>
-                          <p>{message.text}</p>
-                        </li>
-                      );
-                    else if (message.emitter === user?.username)
-                      return (
-                        <li className="myMessages" key={message.id}>
-                          <p className="userMessage">{message.emitter}</p>
-                          <p>{message.text}</p>
-                        </li>
-                      );
-                    else
-                      return (
-                        <li className="othersMessages" key={message.id}>
-                          <p className="userMessage">{message.emitter}</p>
-                          <p>{message.text}</p>
-                        </li>
-                      );
-                  })}
-                </>
-              ) : null}
-            </ul>
-
+            <MessagesList messages={messages} user={user} />
             <input
               className="input"
               type="text"
