@@ -49,15 +49,18 @@ const Landing: SFC<LandingProps> = (props) => {
 
     const join = socket?.emit(JOIN_CHAT, loginData, (error: string) => {
       if (error) return setError(error);
+      debugger;
     });
 
-    if (join && !errorMessage) {
-      console.log("all good! joined");
-      remember();
-      props.setUser({ username: loginData.username, room: loginData.room });
-      setLoginData({ username: "", room: "" });
-      history.push("/chat");
-    }
+    console.log(join);
+
+    // if (join && !errorMessage) {
+    //   console.log("all good! joined");
+    //   remember();
+    //   props.setUser({ username: loginData.username, room: loginData.room });
+    //   setLoginData({ username: "", room: "" });
+    //   history.push("/chat");
+    // }
   };
 
   return (
@@ -67,6 +70,7 @@ const Landing: SFC<LandingProps> = (props) => {
       </header>
       <form onSubmit={onSubmit}>
         <input
+          className="input"
           type="text"
           name="username"
           value={loginData.username}
@@ -74,23 +78,25 @@ const Landing: SFC<LandingProps> = (props) => {
           onChange={onChange}
         />
         <input
+          className="input"
           type="text"
           name="room"
           value={loginData.room}
           placeholder="Write a room name"
           onChange={onChange}
         />
-        <div className="checkbox">
-          <label htmlFor="rememberme">Remember Me </label>
+        <label className="checkbox" htmlFor="rememberme">
+          Remember Me
           <input
             id="rememberme"
             type="checkbox"
             value={rememberMe.toString()}
             onChange={(e) => setRememberMe(e.target.checked)}
           />
-        </div>
+          <span className="checkmark"></span>
+        </label>
 
-        <button type="submit">Start</button>
+        <input className="input" type="submit" value="Log In" />
       </form>
       <p className="errorMessage">{errorMessage}</p>
     </div>

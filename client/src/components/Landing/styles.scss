@@ -1,41 +1,72 @@
 .container {
-  min-height: 100vh;
+  height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+
+  h1 {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
 }
 
 form {
-  display: flex;
-  flex-direction: column;
-  input,
+  position: relative;
+  text-align: center;
+  width: 350px;
+  padding: 40px 40px 60px;
+  background: #ebf5fc;
+  color: #868686;
+  border-radius: 10px;
+  box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.8),
+    5px 5px 10px rgba(0, 0, 0, 0.1);
+
   .checkbox {
-    margin: 8px 0;
-    padding: 5px;
+    margin: 25px 8px 40px;
+    font-size: 15px;
     display: flex;
-    align-items: center;
-  }
-
-  .checkbox {
-    padding: 0;
-    [type="checkbox"] {
-      display: inline-flex;
-      margin: 3px 0 0 6px;
-    }
-  }
-
-  button {
-    background: rgba(135, 206, 250, 0.74);
-    color: white;
-    border: none;
-    padding: 5px;
-    border-radius: 5px;
-    margin: 20px 0 10px;
+    position: relative;
+    padding-left: 25px;
+    width: fit-content;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
-    &:hover {
-      background: lightskyblue;
+    /* Hide the browser's default checkbox */
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    /* Create a custom checkbox */
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 18px;
+      width: 18px;
+      background-color: #cccc;
+      border-radius: 5px;
+      transition: all 0.4s ease;
+    }
+
+    /* On hover */
+    &:hover input ~ .checkmark {
+      background-color: rgb(187, 184, 184);
+    }
+
+    /* On active */
+    input:checked ~ .checkmark {
+      background-color: #006c9c;
     }
   }
 }

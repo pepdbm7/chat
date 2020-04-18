@@ -10,7 +10,9 @@ const Notfound: React.SFC<NotfoundProps> = () => {
   return (
     <div className="container">
       <h2>Oups! Not found page!!</h2>
-      <button onClick={() => history.push("/")}>Go back</button>
+      <button className="goBack" onClick={() => history.push("/")}>
+        Go back
+      </button>
     </div>
   );
 };

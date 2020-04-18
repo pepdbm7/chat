@@ -77,9 +77,14 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
 
   return (
     <div className="page">
-      <h2 className="title">Chat {user?.room}</h2>
+      <h2 className="title">
+        Room: <span>{user?.room}</span>
+      </h2>
+      <button className="logout" onClick={handleLogout}>
+        Logout
+      </button>
       <div className="containerChat">
-        <div className="leftboard">
+        <div className="usersBoard">
           <h3>Users:</h3>
           <ul>
             {chatUsers
@@ -97,52 +102,51 @@ const Chat: SFC<IChatProps> = ({ socket, user }) => {
                 ))
               : null}
           </ul>
-          <button onClick={handleLogout}>Logout</button>
         </div>
-        <div className="right">
-          {messages ? (
-            <>
-              <h3>MESSAGES:</h3>
-              <ul>
-                {messages.map((message: IMessage) => {
-                  console.log(message.emitter, user?.username);
-                  if (message.emitter === "admin")
-                    return (
-                      <li className="adminMessages" key={message.id}>
-                        <p>{message.text}</p>
-                      </li>
-                    );
-                  else if (message.emitter === user?.username)
-                    return (
-                      <li className="myMessages" key={message.id}>
-                        <p className="userMessage">{message.emitter}</p>
-                        <p>{message.text}</p>
-                      </li>
-                    );
-                  else
-                    return (
-                      <li className="othersMessages" key={message.id}>
-                        <p className="userMessage">{message.emitter}</p>
-                        <p>{message.text}</p>
-                      </li>
-                    );
-                })}
-              </ul>
-            </>
-          ) : null}
-
+        <div className="messagesBoard">
           <form onSubmit={handleSendMessage}>
+            <h3>Messages:</h3>
+            <ul>
+              {messages ? (
+                <>
+                  {messages.map((message: IMessage) => {
+                    console.log(message.emitter, user?.username);
+                    if (message.emitter === "admin")
+                      return (
+                        <li className="adminMessages" key={message.id}>
+                          <p>{message.text}</p>
+                        </li>
+                      );
+                    else if (message.emitter === user?.username)
+                      return (
+                        <li className="myMessages" key={message.id}>
+                          <p className="userMessage">{message.emitter}</p>
+                          <p>{message.text}</p>
+                        </li>
+                      );
+                    else
+                      return (
+                        <li className="othersMessages" key={message.id}>
+                          <p className="userMessage">{message.emitter}</p>
+                          <p>{message.text}</p>
+                        </li>
+                      );
+                  })}
+                </>
+              ) : null}
+            </ul>
+
             <input
+              className="input"
               type="text"
               name="room"
               value={messageToSend}
               placeholder="Write something..."
               onChange={(e) => setMessageToSend(e.target.value)}
             />
-            <button type="submit">Send</button>
+            <input className="input" type="submit" value="Send" />
+            <p className="errorMessage">{errorMessage}</p>
           </form>
-
-          <p className="errorMessage">{errorMessage}</p>
         </div>
       </div>
     </div>

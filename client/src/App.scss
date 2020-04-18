@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -5,17 +11,87 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #282c34;
-  color: white;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  background: rgba(240, 246, 250, 1);
+  background: -moz-linear-gradient(
+    top,
+    rgba(240, 246, 250, 1) 0%,
+    rgba(219, 239, 252, 1) 100%
+  );
+  background: -webkit-gradient(
+    left top,
+    left bottom,
+    color-stop(0%, rgba(240, 246, 250, 1)),
+    color-stop(100%, rgba(219, 239, 252, 1))
+  );
+  background: -webkit-linear-gradient(
+    top,
+    rgba(240, 246, 250, 1) 0%,
+    rgba(219, 239, 252, 1) 100%
+  );
+  background: -o-linear-gradient(
+    top,
+    rgba(240, 246, 250, 1) 0%,
+    rgba(219, 239, 252, 1) 100%
+  );
+  background: -ms-linear-gradient(
+    top,
+    rgba(240, 246, 250, 1) 0%,
+    rgba(219, 239, 252, 1) 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    rgba(240, 246, 250, 1) 0%,
+    rgba(219, 239, 252, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f6fa', endColorstr='#dbeffc', GradientType=0 );
+  color: #c7c7c7;
+  h1,
+  h2,
+  h3 {
+    color: #32a3b1;
+  }
 }
 
 .errorMessage {
   color: tomato;
   height: 14px;
   font-size: 14px;
+}
+
+.input {
+  margin: 20px 0 0;
+  font-size: 14px;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  background: #ebf5fc;
+  color: #006c9c;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  width: 100%;
+  height: 50px;
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 1),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+
+  &::placeholder {
+    font-weight: 500;
+    color: #9999;
+  }
+
+  &[type="submit"] {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    justify-content: center;
+    box-shadow: -2px -2px 6px rgba(255, 255, 255, 1),
+      2px 2px 6px rgba(0, 0, 0, 0.1);
+    &:hover {
+      color: #006c9c;
+      box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 1),
+        inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+  }
 }

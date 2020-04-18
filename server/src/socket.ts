@@ -73,9 +73,9 @@ export default (io: Server) => {
 
     socket.on("disconnect", () => {
       const { user } = removeUser(socket.id);
-      const usersInChat = user && getUsersInRoom(user.room);
+      const usersInChat = getUsersInRoom(user.room).users.length;
 
-      //if no users in chat, don't send update:
+      //if users in chat, let them know this user left:
       if (user && usersInChat) {
         io.to(user.room).emit("message", {
           id: "sdf22a",
