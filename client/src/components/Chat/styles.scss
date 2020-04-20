@@ -1,8 +1,30 @@
+@mixin background($color1, $color2) {
+  background: $color1;
+  background: -moz-linear-gradient(top, $color1 0%, $color2 100%);
+  background: -webkit-gradient(
+    left top,
+    left bottom,
+    color-stop(0%, $color1),
+    color-stop(100%, $color2)
+  );
+  background: -webkit-linear-gradient(top, $color1 0%, $color2 100%);
+  background: -o-linear-gradient(top, $color1 0%, $color2 100%);
+  background: -ms-linear-gradient(top, $color1 0%, $color2 100%);
+  background: linear-gradient(to bottom, $color1 0%, $color2 100%);
+}
+
 .page {
   $breakpoint: 768px;
 
   padding: 10px 20px 50px;
   position: relative;
+  @include background(rgba(240, 246, 250, 1), rgba(219, 239, 252, 1));
+
+  h1,
+  h2,
+  h3 {
+    color: #32a3b1;
+  }
 
   .title {
     font-weight: 500;
@@ -12,7 +34,8 @@
     }
   }
 
-  .logout {
+  .logout,
+  .darkMode {
     position: absolute;
     right: 20px;
     top: 20px;
@@ -34,10 +57,15 @@
       2px 2px 6px rgba(0, 0, 0, 0.1);
 
     &:hover {
-      color: #006c9c;
+      color: hsl(198, 98%, 25%);
+      font-weight: 700;
       box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 1),
         inset 2px 2px 6px rgba(0, 0, 0, 0.1);
     }
+  }
+
+  .darkMode {
+    right: 115px;
   }
 
   .containerChat {
@@ -94,6 +122,7 @@
     }
 
     .messagesBoard {
+      background: #ebf5fc;
       width: 100%;
       min-width: 350px;
       margin: 20px 0 0;
@@ -103,34 +132,53 @@
         margin: 0 0 0 20px;
       }
 
-      /* Scrollbar */
-
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 18px;
-      }
-      ::-webkit-scrollbar-track {
-        background-clip: padding-box;
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-thumb {
-        border: 4px solid #006c9c;
-        background-clip: padding-box;
-        background-color: #006c9c;
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-button {
-        width: 0;
-        height: 0;
-        display: none;
-      }
-
       form {
+        background: transparent;
         height: 100%;
         width: 100%;
         display: flex;
         flex-direction: column;
       }
+    }
+  }
+
+  &.dark {
+    @include background(rgb(63, 60, 60), hsl(198, 55%, 22%));
+
+    h1,
+    h2,
+    h3 {
+      color: rgb(103, 215, 230);
+    }
+
+    .logout,
+    .darkMode,
+    input[type="submit"] {
+      color: rgb(103, 215, 230);
+      @include background(rgb(68, 67, 67), rgb(27, 27, 27));
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1),
+        -2px -2px 2px rgba(255, 255, 255, 1);
+      &:hover {
+        box-shadow: 2px 2px 2px rgba(255, 255, 255, 1),
+          -2px -2px 2px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .usersBoard,
+    .messagesBoard {
+      background: rgb(68, 67, 67);
+    }
+
+    .messagesBoard ul {
+      @include background(hsl(0, 2%, 75%), hsl(0, 0%, 48%));
+    }
+
+    input {
+      &::placeholder {
+        color: rgba(75, 74, 74, 0.849);
+      }
+      color: #006c9c;
+      @include background(rgb(212, 209, 209), rgb(148, 146, 146));
     }
   }
 }

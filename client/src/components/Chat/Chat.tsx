@@ -33,6 +33,7 @@ export interface IMessage {
 
 const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
   const [chatUsers, setChatUsers] = useState<IChatUser[]>([]);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [messageToSend, setMessageToSend] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -40,14 +41,14 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
   const history = useHistory();
   const chatRef = useRef<HTMLUListElement>(null);
 
+  useEffect(() => console.log(darkMode), [darkMode]);
+
   useEffect(() => {
     socket?.on("message", (message: IMessage): void => {
       setMessages((messages: IMessage[]) => [...messages, message]);
-      console.log("on new message -->", { messages });
     });
 
     socket?.on("roomData", ({ users, error }: IRoomData): void => {
-      console.log("roomdata updated -->", { users }, { error });
       error && setError(error);
       users && setChatUsers(users);
     });
@@ -93,10 +94,13 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
   };
 
   return (
-    <div className="page">
+    <div className={darkMode ? "page dark" : "page"}>
       <h2 className="title">
         Room: <span>{user?.room}</span>
       </h2>
+      <button className="darkMode" onClick={(e) => setDarkMode(!darkMode)}>
+        {darkMode ? "Light" : "Dark"}
+      </button>
       <button className="logout" onClick={handleLogout}>
         Logout
       </button>

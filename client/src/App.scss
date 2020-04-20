@@ -11,40 +11,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: rgba(240, 246, 250, 1);
-  background: -moz-linear-gradient(
-    top,
-    rgba(240, 246, 250, 1) 0%,
-    rgba(219, 239, 252, 1) 100%
-  );
-  background: -webkit-gradient(
-    left top,
-    left bottom,
-    color-stop(0%, rgba(240, 246, 250, 1)),
-    color-stop(100%, rgba(219, 239, 252, 1))
-  );
-  background: -webkit-linear-gradient(
-    top,
-    rgba(240, 246, 250, 1) 0%,
-    rgba(219, 239, 252, 1) 100%
-  );
-  background: -o-linear-gradient(
-    top,
-    rgba(240, 246, 250, 1) 0%,
-    rgba(219, 239, 252, 1) 100%
-  );
-  background: -ms-linear-gradient(
-    top,
-    rgba(240, 246, 250, 1) 0%,
-    rgba(219, 239, 252, 1) 100%
-  );
-  background: linear-gradient(
-    to bottom,
-    rgba(240, 246, 250, 1) 0%,
-    rgba(219, 239, 252, 1) 100%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f6fa', endColorstr='#dbeffc', GradientType=0 );
-  color: #c7c7c7;
+
   h1,
   h2,
   h3 {
@@ -97,21 +64,19 @@ body {
 }
 
 /* Scrollbar */
-
 ::-webkit-scrollbar {
-  width: 14px;
-  height: 18px;
+  width: 12px;
 }
+
 ::-webkit-scrollbar-track {
-  background-clip: padding-box;
-  border-radius: 10px;
+  display: none;
 }
 ::-webkit-scrollbar-thumb {
   border: 4px solid #006c9c;
-  background-clip: padding-box;
   background-color: #006c9c;
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-button {
   width: 0;
   height: 0;
