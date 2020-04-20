@@ -8,45 +8,39 @@ interface IMessagesProps {
   user?: IChatUser;
 }
 
-const MessagesList: SFC<IMessagesProps> = ({ messages, user }) => {
-  useEffect(() => {}, []);
-
-  useEffect(() => console.log({ messages }), [messages]);
-
-  return (
-    <ul className="messagesList">
-      {messages ? (
-        <>
-          {messages.map((message: IMessage) => {
-            if (message.emitter === "admin")
-              return (
-                <li className="adminMessages" key={message.id}>
-                  <p>{message.text}</p>
-                </li>
-              );
-            else if (message.emitter === user?.username)
-              return (
-                <li className="myMessages" key={message.id}>
-                  <p className="userMessage">
-                    {message.emitter} - <span>{message.time}</span>
-                  </p>
-                  <p className="messageText">{message.text}</p>
-                </li>
-              );
-            else
-              return (
-                <li className="othersMessages" key={message.id}>
-                  <p className="userMessage">
-                    {message.emitter} - <span>{message.time}</span>
-                  </p>
-                  <p className="messageText">{message.text}</p>
-                </li>
-              );
-          })}
-        </>
-      ) : null}
-    </ul>
-  );
-};
+const MessagesList: SFC<IMessagesProps> = ({ messages, user }) => (
+  <ul className="messagesList">
+    {messages ? (
+      <>
+        {messages.map((message: IMessage) => {
+          if (message.emitter === "admin")
+            return (
+              <li className="adminMessages" key={message.id}>
+                <p>{message.text}</p>
+              </li>
+            );
+          else if (message.emitter === user?.username)
+            return (
+              <li className="myMessages" key={message.id}>
+                <p className="userMessage">
+                  {message.emitter} - <span>{message.time}</span>
+                </p>
+                <p className="messageText">{message.text}</p>
+              </li>
+            );
+          else
+            return (
+              <li className="othersMessages" key={message.id}>
+                <p className="userMessage">
+                  {message.emitter} - <span>{message.time}</span>
+                </p>
+                <p className="messageText">{message.text}</p>
+              </li>
+            );
+        })}
+      </>
+    ) : null}
+  </ul>
+);
 
 export default MessagesList;

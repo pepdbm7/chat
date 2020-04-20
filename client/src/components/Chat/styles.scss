@@ -71,12 +71,25 @@
       }
 
       ul {
-        a {
-          text-decoration: none;
-          color: gray;
-          &:hover {
-            color: lightgreen;
-            font-weight: 700;
+        li {
+          margin-bottom: 12px;
+          &.me {
+            font-weight: 900;
+          }
+          .connected,
+          .notConnected {
+            display: inline-block;
+            background-color: lightgreen;
+            height: 5px;
+            width: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 4px lightgreen;
+            margin-right: 10px;
+          }
+
+          .notConnected {
+            background-color: gray;
+            box-shadow: none;
           }
         }
       }

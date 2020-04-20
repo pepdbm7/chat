@@ -1,5 +1,5 @@
 import React, { SFC, useState, useEffect, SyntheticEvent } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import MessagesList from "./MessagesList/MessagesList";
 import { SEND_MESSAGE, LOGOUT } from "../../socketEvents";
 
@@ -21,6 +21,7 @@ export interface IChatUser {
   id: string;
   username?: string;
   room?: string;
+  active?: boolean;
 }
 
 export interface IMessage {
@@ -39,16 +40,16 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
 
   useEffect(() => {
     socket?.on("message", (message: IMessage): void => {
+      console.log("on new message -->", { messages });
       setMessages((messages: IMessage[]) => [...messages, message]);
     });
 
     socket?.on("roomData", ({ users, error }: IRoomData): void => {
+      console.log("roomdata updated -->", { users }, { error });
       error && setError(error);
       users && setChatUsers(users);
     });
   }, []);
-
-  // useEffect(() => console.log({ chatUsers }), [chatUsers]);
 
   const setError = (message: string): void => {
     setTimeout(() => setErrorMessage(""), 2000);
@@ -59,9 +60,13 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
     e.preventDefault();
 
     if (messageToSend)
-      socket?.emit(SEND_MESSAGE, messageToSend, (error: string) => {
-        if (error) return setError(error);
-      });
+      socket?.emit(
+        SEND_MESSAGE,
+        { sender: user, messageToSend },
+        (error: string) => {
+          if (error) return setError(error);
+        }
+      );
     setMessageToSend("");
   };
 
@@ -90,21 +95,25 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
         <div className="usersBoard">
           <h3>Users:</h3>
           <ul>
+            {user ? (
+              <li className="me">
+                <div className="connected" />
+                {user.username} - (me)
+              </li>
+            ) : null}
             {chatUsers
-              ? chatUsers.map((user: IChatUser) => (
-                  <li key={user.id}>
-                    {
-                      //<Link
-                      //   to={""}
-                      // to={`/chat/${user.name}`}
-                      // >
-                      // {
-                      user.username
-                      // }
-                      // </Link>
-                    }
-                  </li>
-                ))
+              ? chatUsers.map((u: IChatUser) =>
+                  u.username !== user?.username ? (
+                    <li key={u.id}>
+                      <div
+                        className={
+                          u.active === true ? "connected" : "notConnected"
+                        }
+                      />
+                      {u.username}
+                    </li>
+                  ) : null
+                )
               : null}
           </ul>
         </div>

@@ -30,8 +30,6 @@ interface IMessage {
 
 export default (io: Server) => {
   io.on("connect", (socket: Socket) => {
-    console.log(`User with ID: ${socket.id} just connected!!!`);
-
     socket.on(VERIFY_USER, ({ username, room }: IUser, callback: Function) => {
       const { error, user } = addUser({ id: socket.id, username, room });
 
@@ -59,26 +57,24 @@ export default (io: Server) => {
       io.to(room).emit("roomData", getUsersInRoom(room));
     });
 
-    socket.on(SEND_MESSAGE, (message: string, callback: Function) => {
-      const { user, error } = getUser(socket.id);
+    socket.on(SEND_MESSAGE, ({ sender, messageToSend }, callback: Function) => {
+      const { user, error } = getUser(sender.username);
       if (error) return callback(error);
 
       io.to(user.room).emit("message", {
         id: String(Math.random()),
         emitter: user.username,
-        text: message,
+        text: messageToSend,
         time: getTime(),
       });
     });
 
-    const disconnect = () => {
+    function disconnect() {
       const { removedUser } = removeUser(socket.id);
-      const usersInChat =
-        removedUser && getUsersInRoom(removedUser.room).users.length;
-      console.log("disconnecting,", { removedUser }, { usersInChat });
+      const usersInChat = removedUser && getUsersInRoom(removedUser.room);
 
       //if users in chat, let them know this user left:
-      if (removedUser && usersInChat) {
+      if (removedUser && usersInChat.users.length) {
         console.log("disconnecting y users:", { removedUser }, { usersInChat });
         io.to(removedUser.room).emit("message", {
           id: String(Math.random()),
@@ -88,10 +84,11 @@ export default (io: Server) => {
           } has left from room ${removedUser.room.toUpperCase()}`,
           time: getTime(),
         });
+        console.log("after logout: --->", usersInChat);
 
         io.to(removedUser.room).emit("roomData", usersInChat);
       }
-    };
+    }
 
     socket.on(LOGOUT, () => {
       disconnect();

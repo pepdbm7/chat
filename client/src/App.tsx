@@ -29,13 +29,9 @@ const App: SFC<IAppProps> = () => {
     });
     setSocket(socket);
   };
-
-  useEffect(() => console.log({ socket }, { user }), [socket, user]);
-
   const connectUserToSocket = (user: IUser) => {
     socket?.emit("connect", user);
     setUser(user);
-    console.log({ user });
   };
 
   //to adapt height on mac device's browser:

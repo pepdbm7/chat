@@ -1,7 +1,8 @@
 interface IUser {
-  id: string;
+  id?: string;
   username?: string;
   room?: string;
+  active?: boolean;
 }
 
 interface IAnswer {
@@ -10,10 +11,10 @@ interface IAnswer {
   error?: string;
 }
 
-const users: IUser[] = [];
+let users: IUser[] = [];
 
 const addUser = ({ id, username, room }: IUser): IAnswer => {
-  const user = { id, username, room };
+  const user = { id, username, room, active: true };
 
   username = username?.trim().toLowerCase();
   room = room?.trim().toLowerCase();
@@ -21,39 +22,60 @@ const addUser = ({ id, username, room }: IUser): IAnswer => {
   if (!username || !room)
     return { user, error: "Missing username or room name" };
 
-  const existingUserInRoom = users.find(
+  const existingUserInRoom: IUser | undefined = users.find(
     (user) => user.room === room && user.username === username
   );
 
-  if (existingUserInRoom) return { user, error: "Username is already taken!" };
+  if (existingUserInRoom) {
+    if (existingUserInRoom.active === true) {
+      return { user, error: "Username is already in use!" };
+    }
+    //if it's same user that had logged out:
+    users.forEach((user) =>
+      user.username === username ? (user.active = true) : user
+    );
 
+    return { user: existingUserInRoom, error: "" };
+  }
+
+  //if it's a new user:
   users.push(user);
 
   return { user, error: "" };
 };
 
 const removeUser = (id: string): IAnswer | object => {
-  const index: number = users.findIndex((user) => user.id === id);
-  const removedUser: IUser = users.splice(index, 1)[0];
+  const anyActive = users.find((user) => user.active === true);
 
-  console.log("after removing------>", { users });
+  //set the active status of this user in users to false:
+  const foundUser: IUser | undefined = users.find((user) => user.id === id);
 
-  if (index !== -1) return { removedUser };
-  return { user: {} };
+  const userIsNotActive: IUser = {
+    ...(foundUser || {}),
+    active: false,
+  };
+
+  const newUsers: IUser[] | [] = users?.map((user) =>
+    user === foundUser ? userIsNotActive : user
+  );
+
+  users = anyActive ? [...newUsers] : [];
+
+  return { removedUser: anyActive ? foundUser : {} };
 };
 
-const getUser = (id: string): IAnswer => {
-  const foundUser: IUser | undefined = users.find((user) => user.id === id);
-  console.log("get User with id:", id);
-  if (!foundUser) console.log("user not found");
-  if (!foundUser) return { error: "User not found!" };
+const getUser = (username: string): IAnswer => {
+  const foundUser: IUser | undefined = users.find(
+    (user) => user.username === username
+  );
+  if (!foundUser) return { error: `User ${username} not found` };
 
   return { user: foundUser };
 };
 
 const getUsersInRoom = (room: string): IAnswer => {
   const usersInRoom: IUser[] = users.filter((user) => user.room === room);
-  console.log({ usersInRoom });
+
   return usersInRoom
     ? { users: usersInRoom, error: "" }
     : { users: [], error: "No users in this room!" };
