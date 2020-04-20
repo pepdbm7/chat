@@ -1,4 +1,4 @@
-import React, { SFC, useState, useEffect, SyntheticEvent } from "react";
+import React, { SFC, useState, useEffect, useRef, SyntheticEvent } from "react";
 import { useHistory } from "react-router-dom";
 import MessagesList from "./MessagesList/MessagesList";
 import { SEND_MESSAGE, LOGOUT } from "../../socketEvents";
@@ -36,12 +36,14 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [messageToSend, setMessageToSend] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+
   const history = useHistory();
+  const chatRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     socket?.on("message", (message: IMessage): void => {
-      console.log("on new message -->", { messages });
       setMessages((messages: IMessage[]) => [...messages, message]);
+      console.log("on new message -->", { messages });
     });
 
     socket?.on("roomData", ({ users, error }: IRoomData): void => {
@@ -50,6 +52,12 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
       users && setChatUsers(users);
     });
   }, []);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const setError = (message: string): void => {
     setTimeout(() => setErrorMessage(""), 2000);
@@ -67,6 +75,7 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
           if (error) return setError(error);
         }
       );
+
     setMessageToSend("");
   };
 
@@ -117,10 +126,13 @@ const Chat: SFC<IChatProps> = ({ socket, user, setSocket, setUser }) => {
               : null}
           </ul>
         </div>
+
         <div className="messagesBoard">
           <form onSubmit={handleSendMessage}>
             <h3>Messages:</h3>
-            <MessagesList messages={messages} user={user} />
+            <ul ref={chatRef} className="messagesList">
+              <MessagesList messages={messages} user={user} />
+            </ul>
             <input
               className="input"
               type="text"

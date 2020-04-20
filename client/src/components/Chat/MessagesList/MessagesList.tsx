@@ -9,7 +9,7 @@ interface IMessagesProps {
 }
 
 const MessagesList: SFC<IMessagesProps> = ({ messages, user }) => (
-  <ul className="messagesList">
+  <>
     {messages ? (
       <>
         {messages.map((message: IMessage) => {
@@ -40,7 +40,7 @@ const MessagesList: SFC<IMessagesProps> = ({ messages, user }) => (
         })}
       </>
     ) : null}
-  </ul>
+  </>
 );
 
 export default MessagesList;
