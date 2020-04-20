@@ -9,7 +9,7 @@ import Notfound from "./components/Notfound/Notfound";
 //styles:
 import "./App.scss";
 
-const socketUrl = "http://localhost:5000";
+const socketUrl = "https://react-chattin.herokuapp.com/";
 
 interface IAppProps {}
 
