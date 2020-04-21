@@ -6,7 +6,7 @@ const {
   SEND_MESSAGE,
   TYPING,
   LOGOUT,
-} = require("../../client/src/socketEvents");
+} = require("./socketEvents");
 
 const {
   addUser,

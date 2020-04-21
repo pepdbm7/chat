@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var _a = require("../../client/src/socketEvents"), VERIFY_USER = _a.VERIFY_USER, JOIN_CHAT = _a.JOIN_CHAT, SEND_MESSAGE = _a.SEND_MESSAGE, TYPING = _a.TYPING, LOGOUT = _a.LOGOUT;
+var _a = require("./socketEvents"), VERIFY_USER = _a.VERIFY_USER, JOIN_CHAT = _a.JOIN_CHAT, SEND_MESSAGE = _a.SEND_MESSAGE, TYPING = _a.TYPING, LOGOUT = _a.LOGOUT;
 var _b = require("./users"), addUser = _b.addUser, removeUser = _b.removeUser, getUser = _b.getUser, getUsersInRoom = _b.getUsersInRoom, getTime = _b.getTime;
 exports.default = (function (io) {
     io.on("connect", function (socket) {
